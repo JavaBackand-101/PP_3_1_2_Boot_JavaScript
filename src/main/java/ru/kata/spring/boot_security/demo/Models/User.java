@@ -6,11 +6,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -22,14 +21,16 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "name")
+    private String name;
+
 
     @Column(name = "surname")
     private String surname;
 
+
     @Column(name = "age")
-    private int age;
+    private Long age;
 
 
     @Column(name = "email")
@@ -39,13 +40,11 @@ public class User implements UserDetails {
     private String password;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "users_roles",
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles;
 
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -53,6 +52,15 @@ public class User implements UserDetails {
 
 
 
+    }
+
+    public User(List<Role> roles, String name, String surname, Long age, String email, String password) {
+        this.roles = roles;
+        this.name = name;
+        this.surname = surname;
+        this.age = age;
+        this.email = email;
+        this.password = password;
     }
 
 
